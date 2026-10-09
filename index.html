@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outlet Prat - Ofertas & Promociones Liquid Glass</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            glass: {
+              bg: 'rgba(255, 255, 255, 0.15)',
+              border: 'rgba(255, 255, 255, 0.25)',
+              card: 'rgba(255, 255, 255, 0.2)',
+              darkCard: 'rgba(15, 23, 42, 0.45)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      min-height: 100vh;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Glassmorphism custom components */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+      background: rgba(255, 255, 255, 0.38);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .glass-input {
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .glass-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.5);
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Apple-style Scroll Animation Classes */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(40px) scale(0.96);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .reveal-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 20px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-white/30 px-6 py-4 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <!-- Left side: Brand + Mobile Drawer Toggle -->
+      <div class="flex items-center gap-4">
+        <button id="toggleSidebarBtn" onclick="toggleSidebar()" class="hidden client-only-inline p-2.5 rounded-xl glass-panel hover:bg-white/40 transition text-slate-800">
+          <i class="fa-solid fa-bars-staggered text-lg"></i>
+        </button>
+        <div class="flex items-center gap-3 cursor-pointer" onclick="navigateHome()">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-500 to-pink-400 flex items-center justify-center text-white shadow-lg shadow-purple-500/30">
+            <i class="fa-solid fa-bag-shopping text-xl"></i>
+          </div>
+          <span class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-purple-900 to-indigo-900">
+            Outlet Prat
+          </span>
+        </div>
+      </div>
+
+      <!-- Right Side Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Quick Switch Role Badge -->
+        <div id="roleBadgeContainer" class="hidden flex items-center bg-white/30 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/40 shadow-sm text-xs font-semibold">
+          <span id="roleLabel" class="text-slate-800 mr-2">Rol actual:</span>
+          <span id="currentRoleText" class="px-2 py-0.5 rounded-full bg-indigo-600 text-white uppercase text-[10px] tracking-wider">Cliente</span>
+        </div>
+
+        <!-- Switch Role Button -->
+        <button id="switchRoleBtn" onclick="toggleRoleSwitch()" class="hidden glass-panel hover:bg-white/50 text-slate-900 px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 border border-white/50">
+          <i class="fa-solid fa-arrows-rotate text-indigo-600"></i>
+          <span class="hidden sm:inline">Cambiar Rol</span>
+        </button>
+
+        <!-- Logout Button -->
+        <button id="logoutBtn" onclick="logout()" class="hidden glass-panel hover:bg-red-500/20 text-red-700 px-3 py-2 rounded-xl text-sm font-medium transition border border-red-200/40">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOGIN / ROLE SELECTION VIEW -->
+  <section id="loginView" class="flex-1 flex items-center justify-center p-6 relative">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-8 shadow-2xl border border-white/50 reveal-on-scroll visible">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-400 mx-auto flex items-center justify-center text-white text-3xl shadow-xl mb-4">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Bienvenido a Outlet Prat</h2>
+        <p class="text-slate-700 text-sm mt-1">Descubre o publica las mejores ofertas locales</p>
+      </div>
+
+      <!-- Role Selector Tabs -->
+      <div class="grid grid-cols-2 gap-2 p-1.5 bg-white/30 backdrop-blur-md rounded-2xl mb-6 border border-white/40">
+        <button id="tabCustomer" onclick="selectLoginRole('customer')" class="py-2.5 rounded-xl font-bold text-sm transition-all duration-300 bg-white text-indigo-900 shadow-md">
+          <i class="fa-solid fa-user mr-1.5"></i> Cliente
+        </button>
+        <button id="tabBusiness" onclick="selectLoginRole('business')" class="py-2.5 rounded-xl font-medium text-sm text-slate-700 hover:text-slate-900 transition-all duration-300">
+          <i class="fa-solid fa-store mr-1.5"></i> Empresa
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Correo Electrónico</label>
+          <input type="email" id="loginEmail" required placeholder="tu@email.com" class="w-full glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Contraseña</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500">
+        </div>
+        
+        <div id="businessExtraFields" class="hidden space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nombre de la Empresa</label>
+            <input type="text" id="loginBusinessName" placeholder="Ej. Prat Tech, Gourmet Prat" class="w-full glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-sm shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.98] transition duration-300 flex items-center justify-center gap-2">
+          <span>Ingresar a la Plataforma</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- MAIN APP WRAPPER (HIDDEN INITIALLY) -->
+  <div id="appView" class="hidden flex-1 flex flex-col md:flex-row relative max-w-7xl w-full mx-auto p-4 sm:p-6 gap-6">
+
+    <!-- CLIENT SIDEBAR / DRAWER -->
+    <aside id="sidebar" class="client-only glass-panel fixed md:relative top-20 md:top-0 left-0 h-[calc(100vh-6rem)] md:h-auto w-72 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300 rounded-3xl p-5 flex flex-col gap-3 shadow-2xl md:shadow-none">
+      <div class="flex items-center justify-between pb-3 border-b border-white/30">
+        <h3 class="font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-indigo-600"></i> Categorías
+        </h3>
+        <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <nav id="categoryList" class="flex flex-col gap-1.5 overflow-y-auto flex-1 pr-1">
+        <!-- Dynamic Category Items rendered via JavaScript -->
+      </nav>
+
+      <div class="pt-3 border-t border-white/30 text-xs text-slate-600 text-center">
+        Outlet Prat Liquid UI &copy; 2026
+      </div>
+    </aside>
+
+    <!-- Overlay for mobile drawer -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 hidden md:hidden"></div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 space-y-8">
+
+      <!-- CLIENT VIEW CONTAINER -->
+      <section id="customerView" class="client-only space-y-8">
+        
+        <!-- Apple Style Hero Section -->
+        <div class="glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden text-center sm:text-left reveal-on-scroll">
+          <div class="max-w-xl z-10 relative">
+            <span class="inline-block px-3 py-1 rounded-full bg-white/40 text-indigo-900 text-xs font-extrabold uppercase tracking-widest mb-3 border border-white/50">
+              Ofertas Destacadas Hoy
+            </span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Ahorra en tus tiendas de Outlet Prat.
+            </h1>
+            <p class="text-slate-800 text-base mt-3 leading-relaxed">
+              Explora promociones exclusivas con diseño envolvente y deja tus calificaciones en tiempo real.
+            </p>
+          </div>
+          <!-- Decorative Glow Circle -->
+          <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-gradient-to-tr from-pink-400 to-indigo-400 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        </div>
+
+        <!-- Offers Grid Header & Filter Indicator -->
+        <div class="flex justify-between items-center px-2">
+          <div>
+            <h2 id="currentCategoryTitle" class="text-2xl font-extrabold text-slate-900">Todas las Ofertas</h2>
+            <p id="offerCountText" class="text-xs font-medium text-slate-700">Cargando promociones...</p>
+          </div>
+        </div>
+
+        <!-- Offers Grid -->
+        <div id="offersGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Dynamic Offer Cards rendered via JavaScript -->
+        </div>
+      </section>
+
+      <!-- BUSINESS / EMPRESA VIEW CONTAINER -->
+      <section id="businessView" class="business-only space-y-8 hidden">
+        
+        <!-- Business Header Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 reveal-on-scroll">
+          <div class="glass-panel p-6 rounded-3xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-800 flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-tags"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Ofertas Activas</p>
+              <p id="statActiveOffers" class="text-2xl font-extrabold text-slate-900">0</p>
+            </div>
+          </div>
+
+          <div class="glass-panel p-6 rounded-3xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-800 flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Calificación Media</p>
+              <p id="statAvgRating" class="text-2xl font-extrabold text-slate-900">4.8</p>
+            </div>
+          </div>
+
+          <div class="glass-panel p-6 rounded-3xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-800 flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Total Reseñas</p>
+              <p id="statTotalReviews" class="text-2xl font-extrabold text-slate-900">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Publish New Offer Form -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-xl border border-white/50 reveal-on-scroll">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-lg">
+              <i class="fa-solid fa-plus"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-extrabold text-slate-900">Publicar Nueva Promoción</h2>
+              <p class="text-xs text-slate-700">Llega a cientos de clientes en Outlet Prat</p>
+            </div>
+          </div>
+
+          <form onsubmit="handleCreateOffer(event)" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Título de la Oferta</label>
+              <input type="text" id="offerTitle" required placeholder="Ej: 50% de descuento en Menú Ejecutivo" class="w-full glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Categoría</label>
+              <select id="offerCategory" required class="w-full glass-input rounded-xl px-4 py-3 text-slate-900">
+                <option value="Moda">Moda</option>
+                <option value="Tecnología">Tecnología</option>
+                <option value="Comida">Comida & Restaurantes</option>
+                <option value="Belleza">Belleza & Bienestar</option>
+                <option value="Hogar">Hogar & Decoración</option>
+                <option value="Entretenimiento">Entretenimiento</option>
+                <option value="Deportes">Deportes</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Etiqueta de Descuento / Promo</label>
+              <input type="text" id="offerDiscount" required placeholder="Ej: 30% OFF, 2x1, Envío Gratis" class="w-full glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Fecha Límite / Vigencia</label>
+              <input type="text" id="offerExpiry" required placeholder="Ej: Válido hasta el 30 de Octubre" class="w-full glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500">
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Imagen Banner (URL o Preset)</label>
+              <div class="flex gap-2">
+                <input type="url" id="offerImageUrl" placeholder="https://images.unsplash.com/..." class="flex-1 glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500">
+                <button type="button" onclick="setRandomPresetImage()" class="px-4 py-3 glass-panel rounded-xl text-xs font-bold text-slate-800 hover:bg-white/40">
+                  <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Preset
+                </button>
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Descripción de la Oferta</label>
+              <textarea id="offerDescription" rows="3" required placeholder="Describe las condiciones de la oferta..." class="w-full glass-input rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500"></textarea>
+            </div>
+
+            <div class="md:col-span-2 flex justify-end">
+              <button type="submit" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-sm shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.98] transition duration-300 flex items-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> Publicar Oferta
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Managed Published Offers List -->
+        <div class="space-y-4">
+          <h3 class="text-xl font-extrabold text-slate-900">Mis Ofertas Publicadas</h3>
+          <div id="businessOffersGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Rendered Business Offers -->
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- REVIEWS MODAL -->
+  <div id="reviewsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md hidden transition-opacity">
+    <div class="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/50 relative max-h-[90vh] flex flex-col">
+      <button onclick="closeReviewsModal()" class="absolute top-5 right-5 text-slate-600 hover:text-slate-900 p-2">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+
+      <div class="mb-4">
+        <h3 id="modalStoreName" class="text-2xl font-extrabold text-slate-900">Reseñas de la Tienda</h3>
+        <p id="modalOfferTitle" class="text-xs text-slate-700">Oferta elegida</p>
+      </div>
+
+      <!-- Add Review Form -->
+      <form onsubmit="handleAddReview(event)" class="glass-panel p-4 rounded-2xl mb-4 border border-white/40 space-y-3">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-800">Deja tu Calificación</label>
+        
+        <!-- Star Selection -->
+        <div class="flex items-center gap-2 text-2xl text-amber-400 cursor-pointer" id="starPicker">
+          <i class="fa-solid fa-star star-btn" onclick="setRating(1)"></i>
+          <i class="fa-solid fa-star star-btn" onclick="setRating(2)"></i>
+          <i class="fa-solid fa-star star-btn" onclick="setRating(3)"></i>
+          <i class="fa-solid fa-star star-btn" onclick="setRating(4)"></i>
+          <i class="fa-solid fa-star star-btn" onclick="setRating(5)"></i>
+          <span id="selectedRatingText" class="text-sm font-bold text-slate-800 ml-2">5.0</span>
+        </div>
+
+        <input type="text" id="reviewAuthor" required placeholder="Tu Nombre" class="w-full glass-input rounded-xl px-3 py-2 text-sm text-slate-900">
+        <textarea id="reviewComment" rows="2" required placeholder="Escribe tu opinión sobre el servicio y la oferta..." class="w-full glass-input rounded-xl px-3 py-2 text-sm text-slate-900"></textarea>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition">
+          Enviar Reseña
+        </button>
+      </form>
+
+      <!-- Reviews Scrollable List -->
+      <div id="modalReviewsList" class="flex-1 overflow-y-auto space-y-3 pr-1">
+        <!-- Rendered Comments -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global Application State
+    let currentUser = null;
+    let selectedCategory = 'Todas';
+    let currentSelectedOfferId = null;
+    let selectedRatingInput = 5;
+
+    // Categories Data
+    const categories = [
+      { id: 'Todas', name: 'Todas las Ofertas', icon: 'fa-border-all' },
+      { id: 'Moda', name: 'Moda & Estilo', icon: 'fa-shirt' },
+      { id: 'Tecnología', name: 'Tecnología', icon: 'fa-laptop' },
+      { id: 'Comida', name: 'Comida & Gourmet', icon: 'fa-utensils' },
+      { id: 'Belleza', name: 'Belleza & Cuidado', icon: 'fa-sparkles' },
+      { id: 'Hogar', name: 'Hogar & Deco', icon: 'fa-couch' },
+      { id: 'Entretenimiento', name: 'Entretenimiento', icon: 'fa-gamepad' },
+      { id: 'Deportes', name: 'Deportes & Fitness', icon: 'fa-dumbbell' },
+    ];
+
+    // Mock Preset Images
+    const presetImages = [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80'
+    ];
+
+    // Sample Initial Offers Data
+    let offers = [
+      {
+        id: '1',
+        storeName: 'Aura Fashion Prat',
+        category: 'Moda',
+        title: '40% Descuento en Colección de Primavera',
+        discount: '40% OFF',
+        description: 'Disfruta de descuentos exclusivos en abrigos ligeros, vestidos e indumentaria urbana seleccionada.',
+        expiry: 'Hasta el 15 de Noviembre',
+        image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80',
+        businessEmail: 'aura@store.com',
+        reviews: [
+          { author: 'Sofía M.', rating: 5, comment: '¡Excelente calidad y atención al cliente!' },
+          { author: 'Carlos R.', rating: 4, comment: 'Muy buena promoción, todo según lo descrito.' }
+        ]
+      },
+      {
+        id: '2',
+        storeName: 'Neotech Prat Electronics',
+        category: 'Tecnología',
+        title: 'Auriculares Cancelling Pro con 30% OFF',
+        discount: '30% OFF',
+        description: 'Sonido de alta definición e inmersión total. Válido presentando el cupón en tienda o web.',
+        expiry: 'Últimas 48 Horas',
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+        businessEmail: 'business@demo.com',
+        reviews: [
+          { author: 'Elena G.', rating: 5, comment: 'Son espectaculares, súper cómodos.' }
+        ]
+      },
+      {
+        id: '3',
+        storeName: 'Bistro Prat Gourmet',
+        category: 'Comida',
+        title: '2x1 en Cenas de Degustación',
+        discount: '2x1 Especial',
+        description: 'Ven en pareja y paga solo un menú degustación gourmet de 5 pasos con maridaje incluido.',
+        expiry: 'Válido Martes a Jueves',
+        image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+        businessEmail: 'bistro@demo.com',
+        reviews: [
+          { author: 'Marcos P.', rating: 5, comment: 'La mejor experiencia gastronómica del mes.' }
+        ]
+      },
+      {
+        id: '4',
+        storeName: 'Zenith Spa Prat',
+        category: 'Belleza',
+        title: 'Packs de Relajación con 25% de Descuento',
+        discount: '25% OFF',
+        description: 'Masaje holístico + circuito hidrotermal de 90 minutos para desconectar por completo.',
+        expiry: 'Hasta agotar cupos',
+        image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
+        businessEmail: 'zenith@demo.com',
+        reviews: []
+      }
+    ];
+
+    let selectedLoginRoleMode = 'customer';
+
+    window.onload = function () {
+      renderCategories();
+      setupScrollReveal();
+      renderOffers();
+    };
+
+    function selectLoginRole(role) {
+      selectedLoginRoleMode = role;
+      const tabCustomer = document.getElementById('tabCustomer');
+      const tabBusiness = document.getElementById('tabBusiness');
+      const extraFields = document.getElementById('businessExtraFields');
+
+      if (role === 'customer') {
+        tabCustomer.className = 'py-2.5 rounded-xl font-bold text-sm transition-all duration-300 bg-white text-indigo-900 shadow-md';
+        tabBusiness.className = 'py-2.5 rounded-xl font-medium text-sm text-slate-700 hover:text-slate-900 transition-all duration-300';
+        extraFields.classList.add('hidden');
+      } else {
+        tabBusiness.className = 'py-2.5 rounded-xl font-bold text-sm transition-all duration-300 bg-white text-indigo-900 shadow-md';
+        tabCustomer.className = 'py-2.5 rounded-xl font-medium text-sm text-slate-700 hover:text-slate-900 transition-all duration-300';
+        extraFields.classList.remove('hidden');
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const businessName = document.getElementById('loginBusinessName').value || 'Comercio Outlet Prat';
+
+      currentUser = {
+        role: selectedLoginRoleMode,
+        email: email,
+        name: selectedLoginRoleMode === 'business' ? businessName : 'Cliente VIP Prat'
+      };
+
+      updateUIForRole();
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+    }
+
+    function toggleRoleSwitch() {
+      if (!currentUser) return;
+      currentUser.role = currentUser.role === 'customer' ? 'business' : 'customer';
+      updateUIForRole();
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('appView').classList.add('hidden');
+    }
+
+    function updateUIForRole() {
+      const isCustomer = currentUser.role === 'customer';
+
+      document.getElementById('roleBadgeContainer').classList.remove('hidden');
+      document.getElementById('switchRoleBtn').classList.remove('hidden');
+      document.getElementById('logoutBtn').classList.remove('hidden');
+
+      const roleBadge = document.getElementById('currentRoleText');
+      roleBadge.textContent = isCustomer ? 'Cliente' : 'Empresa';
+      roleBadge.className = isCustomer 
+        ? 'px-2 py-0.5 rounded-full bg-indigo-600 text-white uppercase text-[10px] tracking-wider'
+        : 'px-2 py-0.5 rounded-full bg-purple-600 text-white uppercase text-[10px] tracking-wider';
+
+      const customerElems = document.querySelectorAll('.client-only');
+      const customerInlineElems = document.querySelectorAll('.client-only-inline');
+      const businessElems = document.querySelectorAll('.business-only');
+
+      customerElems.forEach(el => isCustomer ? el.classList.remove('hidden') : el.classList.add('hidden'));
+      customerInlineElems.forEach(el => isCustomer ? el.classList.remove('hidden') : el.classList.add('hidden'));
+      businessElems.forEach(el => isCustomer ? el.classList.add('hidden') : el.classList.remove('hidden'));
+
+      if (isCustomer) {
+        renderOffers();
+      } else {
+        renderBusinessDashboard();
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoryList');
+      container.innerHTML = categories.map(cat => {
+        const isActive = cat.id === selectedCategory;
+        const activeClasses = isActive 
+          ? 'bg-white/50 border-white/60 text-indigo-950 font-bold shadow-sm' 
+          : 'hover:bg-white/30 text-slate-800 font-medium';
+        
+        return `
+          <button onclick="selectCategory('${cat.id}')" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-transparent transition duration-300 text-left ${activeClasses}">
+            <i class="fa-solid ${cat.icon} text-indigo-600 w-5"></i>
+            <span class="text-sm">${cat.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCategory(catId) {
+      selectedCategory = catId;
+      renderCategories();
+      renderOffers();
+      
+      const found = categories.find(c => c.id === catId);
+      document.getElementById('currentCategoryTitle').textContent = found ? found.name : 'Ofertas';
+
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar.classList.contains('-translate-x-full')) {
+        toggleSidebar();
+      }
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function getAverageRating(reviews) {
+      if (!reviews || reviews.length === 0) return 5.0;
+      const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+      return (sum / reviews.length).toFixed(1);
+    }
+
+    function generateStarsHTML(rating) {
+      const fullStars = Math.floor(rating);
+      let starsHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+          starsHTML += '<i class="fa-solid fa-star text-amber-400"></i>';
+        } else {
+          starsHTML += '<i class="fa-regular fa-star text-amber-400/60"></i>';
+        }
+      }
+      return starsHTML;
+    }
+
+    function renderOffers() {
+      const container = document.getElementById('offersGrid');
+      
+      const filtered = selectedCategory === 'Todas' 
+        ? offers 
+        : offers.filter(o => o.category === selectedCategory);
+
+      document.getElementById('offerCountText').textContent = `${filtered.length} promociones disponibles`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full glass-panel rounded-3xl p-12 text-center text-slate-800">
+            <i class="fa-solid fa-box-open text-4xl mb-3 text-indigo-600"></i>
+            <p class="font-bold text-lg">No hay ofertas en esta categoría por el momento.</p>
+            <p class="text-sm text-slate-600">Prueba seleccionando otra categoría en el menú lateral.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(offer => {
+        const avgRating = getAverageRating(offer.reviews);
+        const starsHTML = generateStarsHTML(avgRating);
+
+        return `
+          <div class="glass-card rounded-3xl overflow-hidden flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <div class="relative h-48 w-full overflow-hidden">
+                <img src="${offer.image}" alt="${offer.title}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" onerror="this.src='https://placehold.co/800x400/e2e8f0/1e293b?text=Outlet+Prat'">
+                <div class="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/50 text-xs font-extrabold text-slate-900 shadow-md">
+                  ${offer.category}
+                </div>
+                <div class="absolute bottom-4 right-4 bg-gradient-to-r from-pink-500 to-indigo-600 text-white font-extrabold px-4 py-1.5 rounded-2xl shadow-lg text-sm tracking-wide">
+                  ${offer.discount}
+                </div>
+              </div>
+
+              <div class="p-6 space-y-3">
+                <div class="flex justify-between items-start gap-2">
+                  <h4 class="text-xs font-extrabold uppercase tracking-widest text-indigo-900">${offer.storeName}</h4>
+                  <div onclick="openReviewsModal('${offer.id}')" class="flex items-center gap-1.5 bg-white/40 backdrop-blur-md px-2.5 py-1 rounded-xl cursor-pointer hover:bg-white/60 transition text-xs font-bold border border-white/40">
+                    <div class="flex text-xs">${starsHTML}</div>
+                    <span class="text-slate-900">${avgRating}</span>
+                    <span class="text-slate-600 text-[10px]">(${offer.reviews ? offer.reviews.length : 0})</span>
+                  </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 leading-snug">${offer.title}</h3>
+                <p class="text-slate-800 text-sm line-clamp-2">${offer.description}</p>
+              </div>
+            </div>
+
+            <div class="px-6 pb-6 pt-2 flex items-center justify-between border-t border-white/20">
+              <span class="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                <i class="fa-regular fa-clock text-indigo-600"></i> ${offer.expiry}
+              </span>
+              
+              <button onclick="openReviewsModal('${offer.id}')" class="px-4 py-2 rounded-xl bg-white/50 hover:bg-white/80 border border-white/60 text-indigo-950 font-bold text-xs transition flex items-center gap-2">
+                <i class="fa-solid fa-star text-amber-500"></i> Reseñas
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      triggerScrollCheck();
+    }
+
+    function renderBusinessDashboard() {
+      const container = document.getElementById('businessOffersGrid');
+      
+      const myOffers = offers;
+
+      document.getElementById('statActiveOffers').textContent = myOffers.length;
+      
+      const totalRev = myOffers.reduce((acc, o) => acc + (o.reviews ? o.reviews.length : 0), 0);
+      document.getElementById('statTotalReviews').textContent = totalRev;
+
+      let allRatingsSum = 0;
+      let ratedCount = 0;
+      myOffers.forEach(o => {
+        if (o.reviews && o.reviews.length > 0) {
+          o.reviews.forEach(r => {
+            allRatingsSum += r.rating;
+            ratedCount++;
+          });
+        }
+      });
+      const avg = ratedCount > 0 ? (allRatingsSum / ratedCount).toFixed(1) : '5.0';
+      document.getElementById('statAvgRating').textContent = avg;
+
+      if (myOffers.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full glass-panel rounded-3xl p-8 text-center text-slate-800">
+            <p class="font-bold">Aún no has publicado ofertas en Outlet Prat.</p>
+            <p class="text-xs text-slate-600 mt-1">Usa el formulario de arriba para publicar tu primera promoción.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = myOffers.map(offer => `
+        <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between border border-white/40">
+          <div class="flex gap-4">
+            <img src="${offer.image}" class="w-20 h-20 rounded-2xl object-cover" onerror="this.src='https://placehold.co/200'">
+            <div class="flex-1 min-w-0">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-800 bg-white/40 px-2 py-0.5 rounded-full">${offer.category}</span>
+              <h4 class="font-bold text-slate-900 text-base truncate mt-1">${offer.title}</h4>
+              <p class="text-xs text-indigo-900 font-extrabold mt-0.5">${offer.discount}</p>
+              <p class="text-xs text-slate-700 mt-1">${offer.expiry}</p>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center mt-4 pt-3 border-t border-white/20">
+            <span class="text-xs text-slate-700">Reseñas: <strong>${offer.reviews ? offer.reviews.length : 0}</strong></span>
+            <button onclick="deleteOffer('${offer.id}')" class="text-red-700 hover:text-red-900 p-2 text-xs font-bold transition flex items-center gap-1">
+              <i class="fa-solid fa-trash-can"></i> Eliminar
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handleCreateOffer(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('offerTitle').value;
+      const category = document.getElementById('offerCategory').value;
+      const discount = document.getElementById('offerDiscount').value;
+      const expiry = document.getElementById('offerExpiry').value;
+      let image = document.getElementById('offerImageUrl').value;
+      const description = document.getElementById('offerDescription').value;
+
+      if (!image) {
+        image = presetImages[Math.floor(Math.random() * presetImages.length)];
+      }
+
+      const newOffer = {
+        id: Date.now().toString(),
+        storeName: currentUser ? currentUser.name : 'Tienda Prat',
+        category: category,
+        title: title,
+        discount: discount,
+        description: description,
+        expiry: expiry,
+        image: image,
+        businessEmail: currentUser ? currentUser.email : '',
+        reviews: []
+      };
+
+      offers.unshift(newOffer);
+      e.target.reset();
+      renderBusinessDashboard();
+    }
+
+    function setRandomPresetImage() {
+      const randomImg = presetImages[Math.floor(Math.random() * presetImages.length)];
+      document.getElementById('offerImageUrl').value = randomImg;
+    }
+
+    function deleteOffer(id) {
+      offers = offers.filter(o => o.id !== id);
+      renderBusinessDashboard();
+    }
+
+    function openReviewsModal(offerId) {
+      currentSelectedOfferId = offerId;
+      const offer = offers.find(o => o.id === offerId);
+      if (!offer) return;
+
+      document.getElementById('modalStoreName').textContent = offer.storeName;
+      document.getElementById('modalOfferTitle').textContent = offer.title;
+
+      renderReviewsList(offer);
+      setRating(5);
+
+      document.getElementById('reviewsModal').classList.remove('hidden');
+    }
+
+    function closeReviewsModal() {
+      document.getElementById('reviewsModal').classList.add('hidden');
+    }
+
+    function setRating(rating) {
+      selectedRatingInput = rating;
+      document.getElementById('selectedRatingText').textContent = rating.toFixed(1);
+      
+      const starBtns = document.querySelectorAll('#starPicker .star-btn');
+      starBtns.forEach((btn, idx) => {
+        if (idx < rating) {
+          btn.className = 'fa-solid fa-star star-btn text-amber-400';
+        } else {
+          btn.className = 'fa-regular fa-star star-btn text-amber-400/60';
+        }
+      });
+    }
+
+    function handleAddReview(e) {
+      e.preventDefault();
+      const author = document.getElementById('reviewAuthor').value;
+      const comment = document.getElementById('reviewComment').value;
+
+      const offer = offers.find(o => o.id === currentSelectedOfferId);
+      if (offer) {
+        if (!offer.reviews) offer.reviews = [];
+        offer.reviews.unshift({
+          author: author,
+          rating: selectedRatingInput,
+          comment: comment
+        });
+
+        document.getElementById('reviewAuthor').value = '';
+        document.getElementById('reviewComment').value = '';
+        
+        renderReviewsList(offer);
+        renderOffers();
+      }
+    }
+
+    function renderReviewsList(offer) {
+      const container = document.getElementById('modalReviewsList');
+      if (!offer.reviews || offer.reviews.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-700 text-center py-4">Aún no hay reseñas para esta oferta. ¡Sé el primero en opinar!</p>`;
+        return;
+      }
+
+      container.innerHTML = offer.reviews.map(r => `
+        <div class="glass-panel p-3.5 rounded-2xl text-xs space-y-1">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-900">${r.author}</span>
+            <div class="flex text-amber-400 text-[10px]">
+              ${generateStarsHTML(r.rating)}
+            </div>
+          </div>
+          <p class="text-slate-800">${r.comment}</p>
+        </div>
+      `).join('');
+    }
+
+    function setupScrollReveal() {
+      window.addEventListener('scroll', triggerScrollCheck);
+      triggerScrollCheck();
+    }
+
+    function triggerScrollCheck() {
+      const reveals = document.querySelectorAll('.reveal-on-scroll');
+      const windowHeight = window.innerHeight;
+
+      reveals.forEach(el => {
+        const elementTop = el.getBoundingClientRect().top;
+        const elementVisible = 100;
+
+        if (elementTop < windowHeight - elementVisible) {
+          el.classList.add('visible');
+        }
+      });
+    }
+
+    function navigateHome() {
+      if (currentUser) {
+        selectedCategory = 'Todas';
+        renderCategories();
+        renderOffers();
+      }
+    }
+  </script>
+</body>
+</html>
